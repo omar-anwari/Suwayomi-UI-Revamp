@@ -1,0 +1,395 @@
+import { graphql } from './gql';
+
+export const LoginMutation = graphql(`
+  mutation Login($username: String!, $password: String!) {
+    login(input: { username: $username, password: $password }) {
+      accessToken
+      refreshToken
+    }
+  }
+`);
+
+export const RefreshTokenMutation = graphql(`
+  mutation RefreshToken($refreshToken: String!) {
+    refreshToken(input: { refreshToken: $refreshToken }) {
+      accessToken
+    }
+  }
+`);
+
+export const LibraryMangasQuery = graphql(`
+  query LibraryMangas($first: Int) {
+    mangas(condition: { inLibrary: true }, order: [{ by: TITLE }], first: $first) {
+      totalCount
+      pageInfo {
+        hasNextPage
+      }
+      nodes {
+        id
+        title
+        thumbnailUrl
+        unreadCount
+        genre
+      }
+    }
+  }
+`);
+
+export const SourcesQuery = graphql(`
+  query Sources {
+    sources(first: 500) {
+      nodes {
+        id
+        name
+        displayName
+        lang
+        iconUrl
+        supportsLatest
+      }
+    }
+  }
+`);
+
+export const SourceInfoQuery = graphql(`
+  query SourceInfo($id: LongString!) {
+    source(id: $id) {
+      id
+      displayName
+      supportsLatest
+    }
+  }
+`);
+
+export const BrowseSourceMutation = graphql(`
+  mutation BrowseSource(
+    $source: LongString!
+    $type: FetchSourceMangaType!
+    $page: Int!
+    $query: String
+  ) {
+    fetchSourceManga(input: { source: $source, type: $type, page: $page, query: $query }) {
+      hasNextPage
+      mangas {
+        id
+        title
+        thumbnailUrl
+        inLibrary
+        status
+        genre
+      }
+    }
+  }
+`);
+
+export const HomeMangasQuery = graphql(`
+  query HomeMangas($first: Int) {
+    mangas(condition: { inLibrary: true }, order: [{ by: IN_LIBRARY_AT, byType: DESC }], first: $first) {
+      nodes {
+        id
+        title
+        thumbnailUrl
+        unreadCount
+        inLibraryAt
+        genre
+        description
+        sourceId
+        source {
+          id
+          displayName
+        }
+        categories {
+          nodes {
+            id
+            name
+            order
+          }
+        }
+        firstUnreadChapter {
+          id
+        }
+        lastReadChapter {
+          id
+          lastPageRead
+          pageCount
+        }
+        latestReadChapter {
+          lastReadAt
+        }
+        latestUploadedChapter {
+          name
+          chapterNumber
+          uploadDate
+        }
+      }
+    }
+  }
+`);
+
+export const LibraryFullQuery = graphql(`
+  query LibraryFull($first: Int) {
+    mangas(condition: { inLibrary: true }, order: [{ by: TITLE }], first: $first) {
+      totalCount
+      nodes {
+        id
+        title
+        thumbnailUrl
+        unreadCount
+        chapters {
+          totalCount
+        }
+        lastReadChapter {
+          id
+          lastReadAt
+        }
+        firstUnreadChapter {
+          id
+          name
+          chapterNumber
+        }
+      }
+    }
+  }
+`);
+
+export const MangaDetailQuery = graphql(`
+  query MangaDetail($id: Int!) {
+    manga(id: $id) {
+      id
+      initialized
+      title
+      author
+      artist
+      status
+      genre
+      description
+      inLibrary
+      unreadCount
+      realUrl
+      thumbnailUrl
+      source {
+        displayName
+        lang
+      }
+      firstUnreadChapter {
+        id
+        name
+        chapterNumber
+      }
+    }
+  }
+`);
+
+export const FetchMangaAndChaptersMutation = graphql(`
+  mutation FetchMangaAndChapters($id: Int!) {
+    fetchMangaAndChapters(input: { id: $id, fetchManga: true, fetchChapters: true }) {
+      manga {
+        id
+        initialized
+      }
+      chapters {
+        id
+      }
+    }
+  }
+`);
+
+export const UpdateMangaLibraryMutation = graphql(`
+  mutation UpdateMangaLibrary($id: Int!, $inLibrary: Boolean!) {
+    updateManga(input: { id: $id, patch: { inLibrary: $inLibrary } }) {
+      manga {
+        id
+        inLibrary
+      }
+    }
+  }
+`);
+
+export const ReaderChapterQuery = graphql(`
+  query ReaderChapter($id: Int!) {
+    chapter(id: $id) {
+      id
+      name
+      chapterNumber
+      sourceOrder
+      pageCount
+      lastPageRead
+      isRead
+      mangaId
+      manga {
+        id
+        title
+      }
+    }
+  }
+`);
+
+export const NextChapterQuery = graphql(`
+  query NextChapter($mangaId: Int!, $sourceOrder: Int!) {
+    chapters(condition: { mangaId: $mangaId, sourceOrder: $sourceOrder }, first: 1) {
+      nodes {
+        id
+        name
+        chapterNumber
+        sourceOrder
+      }
+    }
+  }
+`);
+
+export const FetchChapterPagesMutation = graphql(`
+  mutation FetchChapterPages($chapterId: Int!) {
+    fetchChapterPages(input: { chapterId: $chapterId }) {
+      pages
+    }
+  }
+`);
+
+export const UpdateChapterProgressMutation = graphql(`
+  mutation UpdateChapterProgress($id: Int!, $patch: UpdateChapterPatchInput!) {
+    updateChapter(input: { id: $id, patch: $patch }) {
+      chapter {
+        id
+        isRead
+        lastPageRead
+      }
+    }
+  }
+`);
+
+export const MangaChaptersQuery = graphql(`
+  query MangaChapters($mangaId: Int!, $first: Int, $order: [ChapterOrderInput!]) {
+    chapters(condition: { mangaId: $mangaId }, order: $order, first: $first) {
+      totalCount
+      pageInfo {
+        hasNextPage
+      }
+      nodes {
+        id
+        name
+        chapterNumber
+        sourceOrder
+        isRead
+        isBookmarked
+        isDownloaded
+        pageCount
+        scanlator
+        uploadDate
+        lastPageRead
+      }
+    }
+  }
+`);
+
+export const ServerSettingsQuery = graphql(`
+  query ServerSettings {
+    settings {
+      globalUpdateInterval
+      updateMangas
+      excludeUnreadChapters
+      excludeNotStarted
+      excludeCompleted
+      maxSourcesInParallel
+
+      backupPath
+      backupTime
+      backupInterval
+      backupTTL
+      autoBackupIncludeManga
+      autoBackupIncludeCategories
+      autoBackupIncludeChapters
+      autoBackupIncludeTracking
+      autoBackupIncludeHistory
+      autoBackupIncludeClientData
+      autoBackupIncludeServerSettings
+
+      initialOpenInBrowserEnabled
+      systemTrayEnabled
+      webUIInterface
+      webUIUpdateCheckInterval
+
+      socksProxyEnabled
+      socksProxyHost
+      socksProxyPort
+      socksProxyVersion
+      socksProxyUsername
+      socksProxyPassword
+
+      flareSolverrEnabled
+      flareSolverrUrl
+      flareSolverrTimeout
+      flareSolverrSessionName
+      flareSolverrSessionTtl
+      flareSolverrAsResponseFallback
+
+      syncYomiEnabled
+      syncYomiHost
+      syncYomiApiKey
+      syncInterval
+      syncDataManga
+      syncDataCategories
+      syncDataChapters
+      syncDataHistory
+      syncDataTracking
+
+      debugLogsEnabled
+    }
+  }
+`);
+
+export const UpdateServerSettingsMutation = graphql(`
+  mutation UpdateServerSettings($settings: PartialSettingsTypeInput!) {
+    setSettings(input: { settings: $settings }) {
+      settings {
+        globalUpdateInterval
+        updateMangas
+        excludeUnreadChapters
+        excludeNotStarted
+        excludeCompleted
+        maxSourcesInParallel
+
+        backupPath
+        backupTime
+        backupInterval
+        backupTTL
+        autoBackupIncludeManga
+        autoBackupIncludeCategories
+        autoBackupIncludeChapters
+        autoBackupIncludeTracking
+        autoBackupIncludeHistory
+        autoBackupIncludeClientData
+        autoBackupIncludeServerSettings
+
+        initialOpenInBrowserEnabled
+        systemTrayEnabled
+        webUIInterface
+        webUIUpdateCheckInterval
+
+        socksProxyEnabled
+        socksProxyHost
+        socksProxyPort
+        socksProxyVersion
+        socksProxyUsername
+        socksProxyPassword
+
+        flareSolverrEnabled
+        flareSolverrUrl
+        flareSolverrTimeout
+        flareSolverrSessionName
+        flareSolverrSessionTtl
+        flareSolverrAsResponseFallback
+
+        syncYomiEnabled
+        syncYomiHost
+        syncYomiApiKey
+        syncInterval
+        syncDataManga
+        syncDataCategories
+        syncDataChapters
+        syncDataHistory
+        syncDataTracking
+
+        debugLogsEnabled
+      }
+    }
+  }
+`);

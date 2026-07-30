@@ -1,0 +1,7 @@
+node_modules
+dist
+*.local
+.DS_Store
+
+# codegen output (regenerated from schema.graphql via `npm run codegen`)
+src/gql/

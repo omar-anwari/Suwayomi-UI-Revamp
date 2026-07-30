@@ -1,0 +1,133 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    Roboto, Helvetica, Arial, sans-serif;
+
+  --color-brand-300: #fda4a4;
+  --color-brand-400: #f05a4f;
+  --color-brand-500: #dc3f35;
+  --color-brand-600: #b92824;
+  --color-magenta-400: #f28b45;
+  --color-magenta-500: #e5682e;
+  --color-accent-400: #efaa62;
+  --color-accent-500: #d78332;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  color: #f7f3ed;
+  background-color: #050403;
+  background-image:
+    radial-gradient(50rem 32rem at 14% -14%, rgba(185, 40, 36, 0.13), transparent 62%),
+    radial-gradient(44rem 34rem at 100% 0%, rgba(229, 104, 46, 0.06), transparent 60%),
+    linear-gradient(180deg, #080706 0%, #030303 100%);
+  background-attachment: fixed;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  -webkit-text-size-adjust: 100%;
+  overscroll-behavior-y: none;
+}
+
+::selection {
+  background: color-mix(in oklab, var(--color-brand-500) 45%, transparent);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #2c2b35 transparent;
+}
+*::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+*::-webkit-scrollbar-thumb {
+  background: #2c2b35;
+  border-radius: 9999px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+@utility pt-safe {
+  padding-top: env(safe-area-inset-top);
+}
+@utility pb-safe {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+button,
+a,
+input,
+select {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button,
+a {
+  touch-action: manipulation;
+}
+
+@utility manga-surface {
+  background: linear-gradient(135deg, rgba(18, 21, 30, 0.92), rgba(9, 12, 18, 0.92));
+  border: 1px solid rgba(255, 255, 255, 0.075);
+}
+
+@utility manga-glass {
+  background: rgba(6, 8, 13, 0.76);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(18px);
+}
+
+@utility brand-gradient {
+  background-image: linear-gradient(105deg, #b92824 0%, #dc3f35 55%, #e5682e 100%);
+}
+
+.manga-range {
+  --range-progress: 50%;
+  appearance: none;
+  height: 5px;
+  border-radius: 999px;
+  background: linear-gradient(
+    to right,
+    #c6322d 0%,
+    #eb6948 var(--range-progress),
+    rgba(255, 255, 255, 0.13) var(--range-progress),
+    rgba(255, 255, 255, 0.13) 100%
+  );
+}
+
+.manga-range::-webkit-slider-thumb {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  background: white;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.manga-range::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border: 0;
+  border-radius: 999px;
+  background: white;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
