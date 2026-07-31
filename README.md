@@ -2,7 +2,7 @@
 
 A custom web interface I made for [Suwayomi-Server](https://github.com/Suwayomi/Suwayomi-Server) cause I didn't like how the original looked, it's a mobile-first, dark-themed replacement for the stock WebUI, built on the server's GraphQL API.
 
-React 19 · TypeScript · Vite · Tailwind CSS v4 · urql · JWT auth
+React 19 · TypeScript · Vite · Tailwind CSS v4 · urql · JWT auth · installable PWA
 
 If you find anything broken or you got some cool idea, lmk in issues
 
@@ -17,6 +17,7 @@ If you find anything broken or you got some cool idea, lmk in issues
 - **Manga detail** - metadata, synopsis, bookmark toggle, and a paginated chapter list (100 per page). Uninitialized manga are fetched from the source on first open.
 - **Reader** - left-to-right, right-to-left, and webtoon modes; fit-to-width/height/original; brightness; keyboard navigation; progress synced back to the server.
 - **Settings** - reader preferences (stored locally) plus real server settings: global updates, automatic backups, WebUI, SOCKS proxy, whatever else comes with Suwayomi.
+- **Installable** - ships a manifest and a service worker, so it installs to a home screen / dock and runs in its own window, with covers cached on-device. Needs HTTPS - see [Installing as a PWA](#installing-as-a-pwa).
 
 ## Requirements
 
@@ -85,12 +86,35 @@ server.webUIUpdateCheckInterval = 0
 
 `Custom` stops the server managing the WebUI itself; the `0` update interval stops it checking for stock WebUI releases and overwriting the UI.
 
+Copy everything, not just `assets/` - the build also emits `sw.js`, `workbox-*.js`, `manifest.webmanifest`, `registerSW.js` and `icons/`, and the PWA half won't work without them. Because the service worker precaches the app shell, an already-installed client may serve the previous build for one load after you deploy; it registers with `autoUpdate`, so the next load picks up the new one.
+
 Two things make the output drop-in friendly:
 
-- `base: './'` in `vite.config.ts` emits relative asset paths.
+- `base: './'` in `vite.config.ts` emits relative asset paths, and the manifest uses a relative `start_url` / `scope` to match.
 - The app uses `HashRouter`, so deep links and refreshes work with no server-side rewrite rules.
 
 One exception: the login wallpaper is referenced as an absolute `/assets/wallpaper.png` in `src/components/Login.tsx`, so the app currently expects to be served from the origin root. Might change this in the future, idk yet.
+
+## Installing as a PWA
+
+The build emits a web app manifest and a service worker (`vite-plugin-pwa`), so it can be installed to a home screen / dock and run in its own standalone window. Icons are generated from the brand mark in `public/icons/`.
+
+**This needs HTTPS.** Service workers only register in a secure context, and `http://` on a LAN address isn't one - so on plain HTTP you get the normal site with no install prompt and no offline caching. `http://localhost` is exempt, which is why it works in dev but not from another device.
+
+Easiest fixes, both of which also give you HTTP/2 (see [Performance notes](#performance-notes)):
+
+```
+# Caddyfile - Caddy issues and renews the cert itself
+manga.example.com {
+    reverse_proxy localhost:4567
+}
+```
+
+or `tailscale serve https / http://localhost:PORT` if the server is on a tailnet.
+
+What you actually get: instant repeat loads, a standalone window, and covers cached hard on-device (`CacheFirst`, 800 entries, 30 days) which takes a real bite out of the cover-loading problem. What you *don't* get is offline reading - library data comes from GraphQL over POST, which isn't cacheable, and page images aren't precached. Offline chapters would be a separate feature.
+
+Cached covers persist after signing out (they're in the Cache Storage bucket, not the token store). Clear site data if that matters to you.
 
 ## How it works
 

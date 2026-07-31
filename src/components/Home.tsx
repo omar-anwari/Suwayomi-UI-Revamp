@@ -4,7 +4,7 @@ import { useMutation, useQuery } from 'urql';
 import { HomeMangasQuery, BrowseSourceMutation } from '../operations';
 import { Rail, RailCard } from './Rail';
 import { EmptyState, ErrorState, Skeleton } from './ui';
-import { BellIcon, MoreVerticalIcon, SearchIcon, StarIcon } from './icons';
+import { MoreVerticalIcon, SearchIcon, StarIcon } from './icons';
 import { chapterLabel, formatEpochMs } from '../format';
 import { Brand } from './Brand';
 
@@ -126,10 +126,6 @@ function TopBar() {
           <Link to="/sources" className="grid h-10 w-10 place-items-center rounded-full text-zinc-100" aria-label="Search">
             <SearchIcon className="h-6 w-6" />
           </Link>
-          <button className="relative grid h-10 w-10 place-items-center rounded-full text-zinc-100" aria-label="Notifications">
-            <BellIcon className="h-5.5 w-5.5" />
-            <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-magenta-400 ring-2 ring-[#030509]" />
-          </button>
         </div>
       </div>
     </header>

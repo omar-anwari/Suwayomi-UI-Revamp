@@ -4,7 +4,7 @@ import { useQuery } from 'urql';
 import { LibraryFullQuery } from '../operations';
 import { MangaCard } from './MangaCard';
 import { PageHeader, CoverGridSkeleton, EmptyState, ErrorState } from './ui';
-import { BellIcon, MoreVerticalIcon, SearchIcon } from './icons';
+import { MoreVerticalIcon, SearchIcon } from './icons';
 import { chapterLabel } from '../format';
 import { Brand } from './Brand';
 
@@ -48,10 +48,6 @@ export function Library() {
             <Link to="/sources" className="grid h-10 w-10 place-items-center rounded-full text-zinc-200 md:hidden" aria-label="Search">
               <SearchIcon className="h-5.5 w-5.5" />
             </Link>
-            <button className="relative grid h-10 w-10 place-items-center rounded-full text-zinc-200 md:hidden" aria-label="Notifications">
-              <BellIcon className="h-5 w-5" />
-              <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-magenta-400 ring-2 ring-[#030509]" />
-            </button>
           </>
         }
       >

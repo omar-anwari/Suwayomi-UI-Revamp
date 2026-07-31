@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
-  BellIcon,
   CompassIcon,
   HomeIcon,
   LibraryIcon,
@@ -53,9 +52,6 @@ export function AppShell() {
         </nav>
         <div className="ml-auto flex items-center gap-3">
           <GlobalSearchBox />
-          <button className="grid h-10 w-10 place-items-center rounded-full text-zinc-300 hover:bg-white/5" aria-label="Notifications">
-            <BellIcon className="h-5 w-5" />
-          </button>
           <Link to="/settings" className="relative grid h-9 w-9 place-items-center overflow-hidden rounded-full border border-brand-400/40 bg-brand-500/15">
             <BrandMark className="h-6 w-6" />
             <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border-2 border-[#030509] bg-brand-400" />
