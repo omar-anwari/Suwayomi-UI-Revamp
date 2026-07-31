@@ -11,7 +11,8 @@ If you find anything broken or you got some cool idea, lmk in issues
 ## Features
 
 - **Home** - Has a featured manga section that's sort of like the hero image, a genre shortcuts, a "Trending Now" rail pulled from your most-used source, and recently updated titles. The whole screen is client-sided from one library query.
-- **Library** - cover grid with Continue Reading / Recently Read tabs.
+- **Updates** - a feed of new chapters for the titles you follow, grouped by day and then by manga, so a series you just added doesn't bury the day under a few hundred backfilled chapters. Refresh kicks off a real library update on the server and shows live progress.
+- **Library** - cover grid with Library / Bookmarks / History tabs, plus a Continue Reading list with per-series progress bars.
 - **Discover** - browse and search installed sources, with popular/latest listings.
 - **Manga detail** - metadata, synopsis, bookmark toggle, and a paginated chapter list (100 per page). Uninitialized manga are fetched from the source on first open.
 - **Reader** - left-to-right, right-to-left, and webtoon modes; fit-to-width/height/original; brightness; keyboard navigation; progress synced back to the server.
@@ -112,6 +113,12 @@ src/
 **Images.** An `<img>` can't send an `Authorization` header, so the access token is mirrored into the `suwayomi-server-token` cookie, which `ui_login` also accepts. That keeps cover URLs stable and cacheable across token refreshes. The cookie is only ever *written* on load, never cleared - in other auth modes the server owns that cookie, and clearing it would destroy a session the UI didn't create.
 
 **GraphQL over POST.** `preferGetMethod: false` is required: urql defaults queries to GET, but Suwayomi only executes GraphQL over POST (GET serves the GraphiQL IDE).
+
+**Date units differ.** `Chapter.fetchedAt` comes back in **seconds**, while `uploadDate` / `lastReadAt` / `inLibraryAt` are in **milliseconds**. Mix them up and you get 1970. `format.ts` has `fetchedAtToMs()` for the odd one out.
+
+**Library updates live on the server.** The Updates page never keeps "is a refresh running" in component state - it reads `libraryUpdateStatus.jobsInfo` and polls it (2s while running, 8s idle). That means progress survives navigating away, a full reload, or a refresh started from another tab, and the job keeps going regardless of what the UI is doing.
+
+**Mobile shell.** The app shell is a `100dvh` flex column whose content area scrolls internally, rather than the page scrolling under a `position: fixed` bottom bar. Fixed positioning anchors to the *layout* viewport, which doesn't shrink when a mobile browser auto-hides its address bar - so a fixed bottom nav visibly drifts. Laying it out in-flow means it can't.
 
 ## Performance notes
 

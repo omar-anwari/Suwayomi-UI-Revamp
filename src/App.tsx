@@ -4,6 +4,7 @@ import { AppShell } from './components/AppShell';
 import { Login } from './components/Login';
 import { Home } from './components/Home';
 import { Library } from './components/Library';
+import { Updates } from './components/Updates';
 import { MangaDetail } from './components/MangaDetail';
 import { Reader } from './components/Reader';
 import { SourcesList } from './components/SourcesList';
@@ -21,6 +22,7 @@ export default function App() {
       <Routes>
         <Route element={<AppShell />}>
           <Route path="/" element={<Home />} />
+          <Route path="/updates" element={<Updates />} />
           <Route path="/library" element={<Library />} />
           <Route path="/sources" element={<SourcesList />} />
           <Route path="/settings" element={<Settings />} />

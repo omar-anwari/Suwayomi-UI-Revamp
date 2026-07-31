@@ -8,12 +8,14 @@ import {
   LogOutIcon,
   SearchIcon,
   SettingsIcon,
+  SparklesIcon,
 } from './icons';
 import { clearTokens } from '../auth';
 import { Brand, BrandMark } from './Brand';
 
 const tabs = [
   { to: '/', label: 'Home', Icon: HomeIcon, end: true },
+  { to: '/updates', label: 'Updates', Icon: SparklesIcon, end: false },
   { to: '/sources', label: 'Discover', Icon: CompassIcon, end: false },
   { to: '/library', label: 'Library', Icon: LibraryIcon, end: false },
   { to: '/settings', label: 'Settings', Icon: SettingsIcon, end: false },
@@ -21,7 +23,7 @@ const tabs = [
 
 export function AppShell() {
   return (
-    <div className="min-h-dvh md:pl-56 md:pt-[4.5rem]">
+    <div className="flex h-dvh flex-col overflow-hidden md:block md:h-auto md:min-h-dvh md:overflow-visible md:pl-56 md:pt-[4.5rem]">
       <header className="fixed inset-x-0 top-0 z-50 hidden h-[4.5rem] items-center border-b border-white/[0.07] bg-[#030509]/90 px-7 backdrop-blur-2xl md:flex">
         <Brand link compact className="w-52 shrink-0" />
         <nav className="flex h-full items-center gap-8">
@@ -93,11 +95,11 @@ export function AppShell() {
         </button>
       </nav>
 
-      <div className="pb-[calc(4.25rem+env(safe-area-inset-bottom))] md:pb-0">
+      <div className="min-h-0 flex-1 overflow-y-auto md:flex-none md:overflow-visible">
         <Outlet />
       </div>
 
-      <nav className="pb-safe fixed inset-x-0 bottom-0 z-50 border-t border-white/[0.07] bg-[#05070b]/94 backdrop-blur-2xl md:hidden">
+      <nav className="pb-safe shrink-0 border-t border-white/[0.07] bg-[#05070b]/94 backdrop-blur-2xl md:hidden">
         <div className="flex h-[4.25rem] items-stretch">
           {tabs.map(({ to, label, Icon, end }) => (
             <NavLink key={to} to={to} end={end} className="relative flex flex-1 flex-col items-center justify-center gap-0.5">

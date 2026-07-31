@@ -151,6 +151,64 @@ export const LibraryFullQuery = graphql(`
   }
 `);
 
+export const LibraryUpdatesQuery = graphql(`
+  query LibraryUpdates($first: Int) {
+    chapters(
+      filter: { inLibrary: { equalTo: true } }
+      order: [{ by: FETCHED_AT, byType: DESC }]
+      first: $first
+    ) {
+      totalCount
+      pageInfo {
+        hasNextPage
+      }
+      nodes {
+        id
+        name
+        chapterNumber
+        fetchedAt
+        uploadDate
+        isRead
+        isDownloaded
+        isBookmarked
+        lastPageRead
+        mangaId
+        manga {
+          id
+          title
+          thumbnailUrl
+        }
+      }
+    }
+  }
+`);
+
+export const UpdateLibraryMutation = graphql(`
+  mutation UpdateLibrary {
+    updateLibrary(input: {}) {
+      updateStatus {
+        jobsInfo {
+          isRunning
+          totalJobs
+          finishedJobs
+        }
+      }
+    }
+  }
+`);
+
+export const LibraryUpdateStatusQuery = graphql(`
+  query LibraryUpdateStatus {
+    libraryUpdateStatus {
+      jobsInfo {
+        isRunning
+        totalJobs
+        finishedJobs
+      }
+    }
+  }
+`);
+
 export const MangaDetailQuery = graphql(`
   query MangaDetail($id: Int!) {
     manga(id: $id) {

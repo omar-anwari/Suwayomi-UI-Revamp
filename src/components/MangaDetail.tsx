@@ -70,7 +70,8 @@ function MangaDetailView() {
   }
 
   return (
-    <div className="relative min-h-dvh bg-[#030509] pb-20 md:pb-0">
+    <div className="flex h-dvh flex-col overflow-hidden bg-[#030509] md:block md:h-auto md:min-h-dvh md:overflow-visible">
+      <div className="relative min-h-0 flex-1 overflow-y-auto md:min-h-dvh md:flex-none md:overflow-visible">
       <div className="absolute inset-x-0 top-0 hidden h-[62vh] sm:block sm:h-[68vh]">
         {manga?.thumbnailUrl && (
           <img src={manga.thumbnailUrl} alt="" className="h-full w-full object-cover object-top opacity-35 blur-sm" />
@@ -186,6 +187,7 @@ function MangaDetailView() {
             <ChapterList mangaId={mangaId} initializing={initializing} thumbnailUrl={manga.thumbnailUrl} />
           </>
         )}
+        </div>
       </div>
       <DetailBottomNav />
     </div>
@@ -310,7 +312,7 @@ function DetailBottomNav() {
     { to: '/settings', label: 'Profile', Icon: UserIcon },
   ];
   return (
-    <nav className="pb-safe fixed inset-x-0 bottom-0 z-50 border-t border-white/[0.07] bg-[#05070b]/95 backdrop-blur-xl md:hidden">
+    <nav className="pb-safe shrink-0 border-t border-white/[0.07] bg-[#05070b]/95 backdrop-blur-xl md:hidden">
       <div className="flex h-[4.25rem]">
         {items.map(({ to, label, Icon }) => (
           <Link key={to} to={to} className={`flex flex-1 flex-col items-center justify-center gap-0.5 ${to === '/library' ? 'text-brand-400' : 'text-zinc-500'}`}>

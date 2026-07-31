@@ -213,6 +213,15 @@ export const ShieldIcon = (p: IconProps) => (
   </Svg>
 );
 
+export const RefreshIcon = (p: IconProps) => (
+  <Svg {...p}>
+    <path d="M20 11a8 8 0 0 0-13.7-5.2L3 9" />
+    <path d="M3 4.5V9h4.5" />
+    <path d="M4 13a8 8 0 0 0 13.7 5.2L21 15" />
+    <path d="M21 19.5V15h-4.5" />
+  </Svg>
+);
+
 export const SparklesIcon = (p: IconProps) => (
   <Svg {...p}>
     <path d="m12 3 1.4 4.1L17.5 8.5l-4.1 1.4L12 14l-1.4-4.1-4.1-1.4 4.1-1.4z" />
