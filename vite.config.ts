@@ -58,7 +58,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://nipah:4567',
+        target: 'http://IP:PORT',
         changeOrigin: true,
         ws: true,
       },

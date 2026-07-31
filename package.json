@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "codegen": "graphql-codegen --config codegen.ts",
     "codegen:watch": "graphql-codegen --config codegen.ts --watch",
-    "introspect": "get-graphql-schema http://nipah:4567/api/graphql > schema.graphql"
+    "introspect": "get-graphql-schema http://IP:PORT/api/graphql > schema.graphql"
   },
   "dependencies": {
     "@urql/core": "^6.0.3",
