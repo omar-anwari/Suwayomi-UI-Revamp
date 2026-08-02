@@ -142,18 +142,18 @@ export function SourcesList() {
                   onChange={(event) => updateQuery(event.target.value)}
                   placeholder="Search manga, author…"
                   autoFocus
-                  className="w-full rounded-xl border border-white/[0.09] bg-[#0d1018] py-3.5 pl-11 pr-3 text-sm outline-none placeholder:text-zinc-500 focus:border-brand-500/60"
+                  className="w-full rounded-xl border border-white/[0.09] bg-surface py-3.5 pl-11 pr-3 text-sm outline-none placeholder:text-zinc-500 focus:border-brand-500/60"
                 />
               </label>
             </form>
 
-            <div className="mt-3 rounded-xl border border-white/[0.07] bg-[#0d1018] p-4">
+            <div className="mt-3 rounded-xl border border-white/[0.07] bg-surface p-4">
               <label className="block text-xs font-medium uppercase tracking-[0.12em] text-zinc-500">
                 Search scope
                 <select
                   value={sourceId}
                   onChange={(event) => setSourceId(event.target.value)}
-                  className="mt-2 w-full rounded-lg border border-white/[0.08] bg-[#070a10] px-3 py-2.5 text-sm normal-case tracking-normal text-zinc-200 outline-none focus:border-brand-500/50"
+                  className="mt-2 w-full rounded-lg border border-white/[0.08] bg-app px-3 py-2.5 text-sm normal-case tracking-normal text-zinc-200 outline-none focus:border-brand-500/50"
                 >
                   <option value="all">All installed sources</option>
                   {sources.map((source) => (
@@ -215,7 +215,7 @@ function ResultRow({ manga, rank }: { manga: ResultManga; rank: number }) {
     <li>
       <Link
         to={`/manga/${manga.id}`}
-        className="relative flex gap-3 rounded-xl border border-white/[0.08] bg-[#090c12]/85 p-2.5 transition hover:border-white/15 hover:bg-[#10131b]"
+        className="relative flex gap-3 rounded-xl border border-white/[0.08] bg-surface/85 p-2.5 transition hover:border-white/15 hover:bg-raised"
       >
         <span className="absolute left-1 top-1 z-10 rounded-md bg-black/75 px-1.5 py-1 text-[10px] font-semibold text-zinc-200">
           {rank}

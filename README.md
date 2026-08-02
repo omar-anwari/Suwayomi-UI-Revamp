@@ -1,6 +1,6 @@
 # Suwayomi UI Revamp
 
-A custom web interface I made for [Suwayomi-Server](https://github.com/Suwayomi/Suwayomi-Server) cause I didn't like how the original looked, it's a mobile-first, dark-themed replacement for the stock WebUI, built on the server's GraphQL API.
+A custom web interface I made for [Suwayomi-Server](https://github.com/Suwayomi/Suwayomi-Server) cause I didn't like how the original looked, it's a mobile-first, fully themeable replacement for the stock WebUI, built on the server's GraphQL API.
 
 React 19 · TypeScript · Vite · Tailwind CSS v4 · urql · JWT auth · installable PWA
 
@@ -10,13 +10,15 @@ If you find anything broken or you got some cool idea, lmk in issues
 
 ## Features
 
-- **Home** - Has a featured manga section that's sort of like the hero image, a genre shortcuts, a "Trending Now" rail pulled from your most-used source, and recently updated titles. The whole screen is client-sided from one library query.
-- **Updates** - a feed of new chapters for the titles you follow, grouped by day and then by manga, so a series you just added doesn't bury the day under a few hundred backfilled chapters. Refresh kicks off a real library update on the server and shows live progress.
+- **Home** - Has a featured manga section that's sort of like the hero image, a "Continue Reading" shelf of what you last had open, genre shortcuts, a "Trending Now" rail pulled from your most-used source, and recently updated titles. Mostly client-sided from one library query.
+- **Continue Reading** - the shelf under the hero picks up mid-chapter where you actually stopped (with the page number and a progress bar), or rolls you on to the next unread chapter if you finished the last one. One card per series, most recent first. It's ordered off `lastReadAt` straight from the chapter table, so unlike the Library list it also keeps titles you're fully caught up on.
+- **Themes** - seven built-in palettes including a light one, plus a custom theme editor where every colour is a variable you can set by hand. Export/import as JSON. See [Theming](#theming).
+- **Updates** - a feed of new chapters for the titles you follow, grouped by day and then by manga, so a series you just added doesn't bury the day under a few hundred backfilled chapters. Refresh kicks off a real library update on the server, shows live progress, and tells you how many titles the server's own update filters skipped.
 - **Library** - cover grid with Library / Bookmarks / History tabs, plus a Continue Reading list with per-series progress bars.
 - **Discover** - browse and search installed sources, with popular/latest listings.
 - **Manga detail** - metadata, synopsis, bookmark toggle, and a paginated chapter list (100 per page). Uninitialized manga are fetched from the source on first open.
 - **Reader** - left-to-right, right-to-left, and webtoon modes; fit-to-width/height/original; brightness; keyboard navigation; progress synced back to the server.
-- **Settings** - reader preferences (stored locally) plus real server settings: global updates, automatic backups, WebUI, SOCKS proxy, whatever else comes with Suwayomi.
+- **Settings** - appearance/themes and reader preferences (stored locally) plus real server settings: global updates, automatic backups, WebUI, SOCKS proxy, whatever else comes with Suwayomi.
 - **Installable** - ships a manifest and a service worker, so it installs to a home screen / dock and runs in its own window, with covers cached on-device. Needs HTTPS - see [Installing as a PWA](#installing-as-a-pwa).
 
 ## Requirements
@@ -127,7 +129,9 @@ src/
   useAuth.ts        useSyncExternalStore hook over the token store
   operations.ts     Every GraphQL document, in one place
   readerPrefs.ts    Reader preferences, persisted to localStorage
+  theme.ts          Theme tokens, presets, and the localStorage store
   format.ts         Chapter labels, date formatting
+  index.css         Tailwind theme tokens + the light-mode neutral ramp
   gql/              Generated (git-ignored)
   components/       One file per screen, plus MangaCard / Rail / ui primitives
 ```
@@ -143,6 +147,32 @@ src/
 **Library updates live on the server.** The Updates page never keeps "is a refresh running" in component state - it reads `libraryUpdateStatus.jobsInfo` and polls it (2s while running, 8s idle). That means progress survives navigating away, a full reload, or a refresh started from another tab, and the job keeps going regardless of what the UI is doing.
 
 **Mobile shell.** The app shell is a `100dvh` flex column whose content area scrolls internally, rather than the page scrolling under a `position: fixed` bottom bar. Fixed positioning anchors to the *layout* viewport, which doesn't shrink when a mobile browser auto-hides its address bar - so a fixed bottom nav visibly drifts. Laying it out in-flow means it can't.
+
+## Theming
+
+Settings → Appearance. Seven presets - Ember (the default), Midnight, Forest, Sakura, GMK 8008, Mono, and Paper (light) - plus a custom slot you can edit colour by colour. Everything is stored in `localStorage` under `suwayomi-theme` and applied in `main.tsx` before React mounts, so there's no flash of the wrong palette on load.
+
+**How it actually works.** Tailwind v4 compiles its colour utilities down to variable references - `bg-brand-500` becomes `var(--color-brand-500)`, and `bg-white/5` becomes `color-mix(in oklab, var(--color-white) 5%, transparent)`. So overriding those variables on `<html>` at runtime retints the entire app, and no component needs to know a theme system exists. The `white/x` trick is the useful half: one `ink` token drives every overlay, border and hairline in the app at once, which is what makes a light theme possible without rewriting ~110 class usages.
+
+The 17 tokens in `theme.ts`:
+
+| Group | Tokens | Drives |
+| --- | --- | --- |
+| Brand | `brand300` `brand400` `brand500` `brand600` | buttons, links, badges, progress bars |
+| Secondary | `magenta400` `magenta500` `accent400` `accent500` | the far end of gradients, slider fill |
+| Surfaces | `app` `appTint` `surface` `raised` `glass` | page background, cards, hover states, sticky bars |
+| Details | `glow1` `glow2` `ink` `onBrand` | background glow, overlay tint, text on brand fills |
+
+Two of those are worth knowing about:
+
+- **`ink`** maps to Tailwind's own `--color-white`. Dark themes leave it white; light themes set it to a near-black, which flips every `white/x` overlay into a dark wash in one move.
+- **`onBrand`** is text sitting on a brand fill, and it exists because white isn't always the answer. GMK 8008's gradient runs pink into sky blue, and white legends fail badly on the blue end (1.9:1), so that theme uses a dark plum instead - 4.8:1 on the pink, 8.8:1 on the blue. If you add a theme with light accents, set this to something dark.
+
+Light themes also flip the neutral ramp. `index.css` mirrors `--color-zinc-50` through `--color-zinc-950` under `:root[data-theme-mode="light"]`, so `text-zinc-100` stays "primary text" and `text-zinc-500` stays "muted" without any component branching on the mode.
+
+**Adding a preset** is one entry in the `PRESETS` array in `src/theme.ts` - id, name, mode, and the 17 tokens. It shows up in the picker automatically. The quicker route is to build it in the UI, hit Export, and paste the JSON in as a preset.
+
+Surfaces are semantic rather than literal, so there are no hardcoded hex colours left in `src/components` - `bg-surface/85`, `bg-glass/88`, `bg-raised` and so on. If you add UI, use those instead of `bg-[#0b0e15]` or it won't follow the theme.
 
 ## Performance notes
 
@@ -167,6 +197,8 @@ curl -i http://IP:PORT/
 ```
 
 **Every query returns `Unauthorized` despite a successful login** - same root cause. `login` still hands back a valid-looking JWT in `simple_login` mode, but the server rejects it as a Visitor. Don't try to fix this with the `setSettings` mutation; it requires an authenticated session, which is exactly what you don't have.
+
+**Refresh only updates part of my library** - that's the server, not the UI. `updateLibrary` filters the library before it queues any jobs, so a 100-title library can produce 40 jobs. Suwayomi ships with "skip completed", "skip not started" and the unread-chapter filters *on*, which between them drop anything you've never opened, anything you're behind on, and anything finished. The progress panel reports the skipped count while a refresh runs; the toggles are in Settings → Server. Categories set to not update are skipped too.
 
 **Type errors about `./gql`** - run `npm run codegen`.
 

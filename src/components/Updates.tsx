@@ -114,6 +114,8 @@ export function Updates() {
   const progressPct =
     serverRunning && jobs && jobs.totalJobs > 0 ? Math.round((jobs.finishedJobs / jobs.totalJobs) * 100) : 0;
 
+  const skipped = (jobs?.skippedMangasCount ?? 0) + (jobs?.skippedCategoriesCount ?? 0);
+
   return (
     <>
       <PageHeader
@@ -129,9 +131,6 @@ export function Updates() {
           data ? (unreadTotal > 0 ? `${unreadTotal} unread in recent updates` : 'All caught up') : undefined
         }
         actions={
-          // While a refresh runs the progress bar below owns the status, so
-          // hide this to avoid showing the same thing twice. It comes back
-          // once the run finishes.
           refreshing ? null : (
             <button
               onClick={onRefresh}
@@ -150,12 +149,20 @@ export function Updates() {
         <h1 className="mb-4 text-lg font-semibold tracking-tight text-zinc-100 md:hidden">Updates</h1>
 
         {refreshing && (
-          <div className="mb-4 rounded-xl border border-white/[0.07] bg-[#0a0d14]/80 p-3">
+          <div className="mb-4 rounded-xl border border-white/[0.07] bg-surface/80 p-3">
             <div className="flex items-center gap-2 text-xs font-medium text-zinc-300">
               <RefreshIcon className="h-4 w-4 animate-spin text-brand-400" />
               <span>Checking sources for new chapters…</span>
               {progress && <span className="ml-auto tabular-nums text-zinc-400">{progress}</span>}
             </div>
+            {skipped > 0 && (
+              <p className="mt-1.5 text-[11px] text-zinc-500">
+                {skipped} title{skipped === 1 ? '' : 's'} skipped by your update filters -{' '}
+                <Link to="/settings/server" className="text-brand-400 hover:underline">
+                  change in Settings
+                </Link>
+              </p>
+            )}
             <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/10">
               <div
                 className={`h-full rounded-full brand-gradient transition-[width] duration-500 ${
@@ -223,7 +230,7 @@ function UpdateCard({
   const resumeTo = sorted.find((c) => !c.isRead) ?? sorted[0];
 
   return (
-    <li className="overflow-hidden rounded-xl border border-white/[0.07] bg-[#0a0d14]/80 transition-colors hover:border-white/15">
+    <li className="overflow-hidden rounded-xl border border-white/[0.07] bg-surface/80 transition-colors hover:border-white/15">
       <div className="flex items-center gap-3 p-2.5">
         <Link to={`/manga/${manga.id}`} className="shrink-0">
           <div className="h-20 w-14 overflow-hidden rounded-lg bg-zinc-800 ring-1 ring-white/5">

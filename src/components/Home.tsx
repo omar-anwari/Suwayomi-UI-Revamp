@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useMutation, useQuery } from 'urql';
-import { HomeMangasQuery, BrowseSourceMutation } from '../operations';
+import { HomeMangasQuery, BrowseSourceMutation, ContinueReadingQuery } from '../operations';
 import { Rail, RailCard } from './Rail';
 import { EmptyState, ErrorState, Skeleton } from './ui';
 import { MoreVerticalIcon, SearchIcon, StarIcon } from './icons';
@@ -14,9 +14,63 @@ type SourceManga = { id: number; title: string; thumbnailUrl?: string | null; in
 
 const trendingCache = new Map<string, SourceManga[]>();
 
+type ContinueEntry = {
+  mangaId: number;
+  title: string;
+  thumbnailUrl?: string | null;
+  to: string;
+  progress: number;
+  caption: string;
+};
+
+function useContinueReading(): ContinueEntry[] {
+  const [{ data }] = useQuery({ query: ContinueReadingQuery, variables: { first: 80 } });
+
+  return useMemo(() => {
+    const seen = new Set<number>();
+    const entries: ContinueEntry[] = [];
+
+    for (const chapter of data?.chapters.nodes ?? []) {
+      if (seen.has(chapter.mangaId)) continue;
+      seen.add(chapter.mangaId);
+
+      const manga = chapter.manga;
+      const partRead = !chapter.isRead && chapter.lastPageRead > 0;
+
+      const next = manga.firstUnreadChapter;
+      const to = partRead
+        ? `/manga/${manga.id}/chapter/${chapter.id}`
+        : next
+          ? `/manga/${manga.id}/chapter/${next.id}`
+          : `/manga/${manga.id}`;
+
+      const caption = partRead
+        ? `${chapterLabel(chapter.name, chapter.chapterNumber)} · p${chapter.lastPageRead + 1}`
+        : next
+          ? 'Next chapter ready'
+          : 'All caught up';
+
+      entries.push({
+        mangaId: manga.id,
+        title: manga.title,
+        thumbnailUrl: manga.thumbnailUrl,
+        to,
+        progress: partRead && chapter.pageCount > 0 ? chapter.lastPageRead / chapter.pageCount : 0,
+        caption,
+      });
+
+      if (entries.length >= 14) break;
+    }
+
+    return entries;
+  }, [data]);
+}
+
 export function Home() {
   const [{ data, fetching, error }] = useQuery({ query: HomeMangasQuery, variables: { first: 500 } });
   const nodes = useMemo(() => data?.mangas.nodes ?? [], [data]);
+
+  const continueReading = useContinueReading();
 
   const recentlyUpdated = useMemo(
     () =>
@@ -96,6 +150,21 @@ export function Home() {
       {hero && (
         <main className="mx-auto max-w-[1280px] space-y-6 pb-8 pt-3 sm:pt-5">
           <FeaturedHero manga={hero} />
+          {continueReading.length > 0 && (
+            <Rail title="Continue Reading" seeAllTo="/library">
+              {continueReading.map((entry) => (
+                <RailCard
+                  key={entry.mangaId}
+                  id={entry.mangaId}
+                  to={entry.to}
+                  title={entry.title}
+                  thumbnailUrl={entry.thumbnailUrl}
+                  progress={entry.progress}
+                  caption={entry.caption}
+                />
+              ))}
+            </Rail>
+          )}
           {topGenres.length > 0 && <Categories genres={topGenres} />}
           {trending.length > 0 && (
             <Rail title="Trending Now" seeAllTo={topSource ? `/sources/${topSource.id}` : undefined}>
@@ -119,7 +188,7 @@ export function Home() {
 
 function TopBar() {
   return (
-    <header className="pt-safe sticky top-0 z-30 border-b border-white/[0.06] bg-[#030509]/88 backdrop-blur-2xl md:hidden">
+    <header className="pt-safe sticky top-0 z-30 border-b border-white/[0.06] bg-glass/88 backdrop-blur-2xl md:hidden">
       <div className="flex h-16 items-center px-4">
         <Brand link compact />
         <div className="ml-auto flex items-center gap-1">
@@ -152,7 +221,7 @@ function FeaturedHero({
 
   return (
     <section className="px-4 sm:px-6">
-      <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-[#090912] shadow-2xl shadow-black/20 sm:rounded-2xl">
+      <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-surface shadow-2xl shadow-black/20 sm:rounded-2xl">
         {manga.thumbnailUrl && (
           <img
             src={manga.thumbnailUrl}
@@ -162,8 +231,8 @@ function FeaturedHero({
             className="absolute inset-0 h-full w-full object-cover object-[64%_center]"
           />
         )}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#050710] via-[#050710]/76 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#050710]/75 via-transparent to-[#050710]/10" />
+        <div className="absolute inset-0 bg-gradient-to-r from-app via-app/76 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-app/75 via-transparent to-app/10" />
 
         <div className="relative flex min-h-[18.5rem] max-w-xl flex-col justify-end p-4 sm:min-h-[21rem] sm:p-8">
           <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.12em] text-brand-400">Featured</p>
@@ -184,7 +253,7 @@ function FeaturedHero({
           <div className="mt-4 flex items-center gap-2.5">
             <Link
               to={readTo}
-              className="brand-gradient rounded-lg px-5 py-2.5 text-xs font-semibold text-white shadow-lg shadow-brand-500/30 transition hover:brightness-110 sm:text-sm"
+              className="brand-gradient rounded-lg px-5 py-2.5 text-xs font-semibold text-on-brand shadow-lg shadow-brand-500/30 transition hover:brightness-110 sm:text-sm"
             >
               {readLabel}
             </Link>
@@ -247,7 +316,7 @@ function RecentlyUpdated({ items }: { items: UpdatedItem[] }) {
           <li key={m.id}>
             <Link
               to={`/manga/${m.id}`}
-              className="flex items-center gap-3 rounded-xl border border-white/[0.07] bg-[#0a0d14]/80 p-2 transition-colors hover:border-white/15 hover:bg-[#10141e]"
+              className="flex items-center gap-3 rounded-xl border border-white/[0.07] bg-surface/80 p-2 transition-colors hover:border-white/15 hover:bg-raised"
             >
               <div className="h-16 w-12 shrink-0 overflow-hidden rounded-md bg-zinc-800 ring-1 ring-white/5">
                 {m.thumbnailUrl && (

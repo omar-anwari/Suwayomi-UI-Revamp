@@ -32,7 +32,7 @@ export function MangaCard({
         )}
 
         {unreadCount != null && unreadCount > 0 && (
-          <span className="absolute right-1.5 top-1.5 rounded-md bg-brand-500 px-1.5 py-0.5 text-[11px] font-bold tabular-nums text-white shadow-md shadow-black/30">
+          <span className="absolute right-1.5 top-1.5 rounded-md bg-brand-500 px-1.5 py-0.5 text-[11px] font-bold tabular-nums text-on-brand shadow-md shadow-black/30">
             {unreadCount}
           </span>
         )}

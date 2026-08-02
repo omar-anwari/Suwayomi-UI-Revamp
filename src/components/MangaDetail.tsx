@@ -70,13 +70,13 @@ function MangaDetailView() {
   }
 
   return (
-    <div className="flex h-dvh flex-col overflow-hidden bg-[#030509] md:block md:h-auto md:min-h-dvh md:overflow-visible">
+    <div className="flex h-dvh flex-col overflow-hidden bg-glass md:block md:h-auto md:min-h-dvh md:overflow-visible">
       <div className="relative min-h-0 flex-1 overflow-y-auto md:min-h-dvh md:flex-none md:overflow-visible">
       <div className="absolute inset-x-0 top-0 hidden h-[62vh] sm:block sm:h-[68vh]">
         {manga?.thumbnailUrl && (
           <img src={manga.thumbnailUrl} alt="" className="h-full w-full object-cover object-top opacity-35 blur-sm" />
         )}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#030509]/40 via-[#030509]/55 to-[#030509]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-glass/40 via-glass/55 to-glass" />
       </div>
 
       <div className="pt-safe absolute inset-x-0 top-0 z-20">
@@ -152,7 +152,7 @@ function MangaDetailView() {
               {manga.firstUnreadChapter ? (
                 <Link
                   to={`/manga/${mangaId}/chapter/${manga.firstUnreadChapter.id}`}
-                  className="brand-gradient flex w-full items-center justify-center gap-2 rounded-xl px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-brand-500/30 transition hover:brightness-110"
+                  className="brand-gradient flex w-full items-center justify-center gap-2 rounded-xl px-6 py-3.5 text-sm font-semibold text-on-brand shadow-lg shadow-brand-500/30 transition hover:brightness-110"
                 >
                   <BookOpenIcon className="h-5 w-5" />
                   {manga.unreadCount > 0 ? 'Continue reading' : 'Read from start'}
@@ -168,7 +168,7 @@ function MangaDetailView() {
                   className={`flex w-full items-center justify-center gap-2 rounded-xl border px-4 py-3 text-sm font-medium transition-colors ${
                     inLibrary
                       ? 'border-brand-500/40 bg-brand-500/15 text-brand-300'
-                      : 'border-white/10 bg-[#0c0f16] text-zinc-300 hover:bg-white/10'
+                      : 'border-white/10 bg-surface text-zinc-300 hover:bg-white/10'
                   }`}
                 >
                   <BookmarkIcon className="h-5 w-5" />
@@ -255,7 +255,7 @@ function ChapterList({
             <li key={chapter.id}>
               <Link
                 to={`/manga/${mangaId}/chapter/${chapter.id}`}
-                className="flex items-center gap-3 rounded-xl border border-white/[0.07] bg-[#0b0e15] p-2 transition-colors hover:bg-white/5 active:bg-white/10"
+                className="flex items-center gap-3 rounded-xl border border-white/[0.07] bg-surface p-2 transition-colors hover:bg-white/5 active:bg-white/10"
               >
                 <div className="h-14 w-11 shrink-0 overflow-hidden rounded-md bg-zinc-800">
                   {thumbnailUrl && <img src={thumbnailUrl} alt="" className="h-full w-full object-cover" />}
@@ -312,7 +312,7 @@ function DetailBottomNav() {
     { to: '/settings', label: 'Profile', Icon: UserIcon },
   ];
   return (
-    <nav className="pb-safe shrink-0 border-t border-white/[0.07] bg-[#05070b]/95 backdrop-blur-xl md:hidden">
+    <nav className="pb-safe shrink-0 border-t border-white/[0.07] bg-glass/95 backdrop-blur-xl md:hidden">
       <div className="flex h-[4.25rem]">
         {items.map(({ to, label, Icon }) => (
           <Link key={to} to={to} className={`flex flex-1 flex-col items-center justify-center gap-0.5 ${to === '/library' ? 'text-brand-400' : 'text-zinc-500'}`}>

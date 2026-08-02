@@ -46,7 +46,7 @@ export function PageHeader({
   children?: ReactNode;
 }) {
   return (
-    <header className="pt-safe sticky top-0 z-30 border-b border-white/[0.06] bg-[#030509]/90 backdrop-blur-2xl">
+    <header className="pt-safe sticky top-0 z-30 border-b border-white/[0.06] bg-glass/90 backdrop-blur-2xl">
       <div className="flex h-16 items-center gap-2 px-4">
         {backTo && (
           <Link

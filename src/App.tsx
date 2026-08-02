@@ -11,6 +11,7 @@ import { SourcesList } from './components/SourcesList';
 import { BrowseSource } from './components/BrowseSource';
 import { GenreView } from './components/GenreView';
 import { ReaderSettings, ServerSettings, Settings } from './components/Settings';
+import { ThemeSettings } from './components/ThemeSettings';
 
 export default function App() {
   const isAuthenticated = useIsAuthenticated();
@@ -28,6 +29,7 @@ export default function App() {
           <Route path="/settings" element={<Settings />} />
           <Route path="/settings/server" element={<ServerSettings />} />
           <Route path="/settings/reader" element={<ReaderSettings />} />
+          <Route path="/settings/appearance" element={<ThemeSettings />} />
         </Route>
         <Route path="/sources/:sourceId" element={<BrowseSource />} />
         <Route path="/genre/:name" element={<GenreView />} />

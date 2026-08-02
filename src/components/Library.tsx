@@ -145,7 +145,7 @@ function ContinueRow({ m }: { m: LibNode }) {
     <li>
       <Link
         to={to}
-      className="flex items-center gap-3 rounded-xl border border-white/[0.07] bg-[#0a0d14]/80 p-2.5 transition-colors hover:border-white/15 hover:bg-[#10141e]"
+      className="flex items-center gap-3 rounded-xl border border-white/[0.07] bg-surface/80 p-2.5 transition-colors hover:border-white/15 hover:bg-raised"
       >
         <div className="h-20 w-28 shrink-0 overflow-hidden rounded-lg bg-zinc-800 ring-1 ring-white/5">
           {m.thumbnailUrl && (
@@ -200,7 +200,7 @@ function TabButton({
       onClick={onClick}
       className={`min-w-0 rounded-[0.65rem] px-1.5 py-2.5 text-[11px] font-medium transition-colors sm:text-sm ${
         active
-          ? 'brand-gradient text-white shadow'
+          ? 'brand-gradient text-on-brand shadow'
           : 'text-zinc-300 hover:text-white'
       }`}
     >

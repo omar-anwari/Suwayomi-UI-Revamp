@@ -233,7 +233,7 @@ function Pill({
       onClick={onClick}
       className={`shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
         active
-          ? 'bg-gradient-to-r from-brand-500 to-magenta-500 text-white shadow'
+          ? 'bg-gradient-to-r from-brand-500 to-magenta-500 text-on-brand shadow'
           : 'border border-white/10 bg-white/5 text-zinc-300 hover:text-white'
       }`}
     >

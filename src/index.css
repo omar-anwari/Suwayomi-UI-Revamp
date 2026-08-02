@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-@theme {
+@theme static {
   --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
     Roboto, Helvetica, Arial, sans-serif;
 
@@ -12,10 +12,33 @@
   --color-magenta-500: #e5682e;
   --color-accent-400: #efaa62;
   --color-accent-500: #d78332;
+
+  --color-app: #050403;
+  --color-app-tint: #080706;
+  --color-surface: #0a0d14;
+  --color-raised: #10141e;
+  --color-glass: #030509;
+  --color-glow-1: #b92824;
+  --color-glow-2: #e5682e;
+  --color-on-brand: #ffffff;
 }
 
 :root {
   color-scheme: dark;
+}
+
+:root[data-theme-mode="light"] {
+  --color-zinc-50: #18181b;
+  --color-zinc-100: #27272a;
+  --color-zinc-200: #3f3f46;
+  --color-zinc-300: #52525b;
+  --color-zinc-400: #5f5f6a;
+  --color-zinc-500: #71717a;
+  --color-zinc-600: #8b8b95;
+  --color-zinc-700: #c9c9d1;
+  --color-zinc-800: #e0e0e5;
+  --color-zinc-900: #efeff2;
+  --color-zinc-950: #f7f7f9;
 }
 
 html,
@@ -26,12 +49,20 @@ body,
 
 body {
   margin: 0;
-  color: #f7f3ed;
-  background-color: #050403;
+  color: var(--color-zinc-50);
+  background-color: var(--color-app);
   background-image:
-    radial-gradient(50rem 32rem at 14% -14%, rgba(185, 40, 36, 0.13), transparent 62%),
-    radial-gradient(44rem 34rem at 100% 0%, rgba(229, 104, 46, 0.06), transparent 60%),
-    linear-gradient(180deg, #080706 0%, #030303 100%);
+    radial-gradient(
+      50rem 32rem at 14% -14%,
+      color-mix(in oklab, var(--color-glow-1) 14%, transparent),
+      transparent 62%
+    ),
+    radial-gradient(
+      44rem 34rem at 100% 0%,
+      color-mix(in oklab, var(--color-glow-2) 7%, transparent),
+      transparent 60%
+    ),
+    linear-gradient(180deg, var(--color-app-tint) 0%, var(--color-app) 100%);
   background-attachment: fixed;
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
@@ -46,14 +77,14 @@ body {
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: #2c2b35 transparent;
+  scrollbar-color: var(--color-raised) transparent;
 }
 *::-webkit-scrollbar {
   width: 7px;
   height: 7px;
 }
 *::-webkit-scrollbar-thumb {
-  background: #2c2b35;
+  background: var(--color-raised);
   border-radius: 9999px;
 }
 *::-webkit-scrollbar-track {
@@ -86,18 +117,27 @@ a {
 }
 
 @utility manga-surface {
-  background: linear-gradient(135deg, rgba(18, 21, 30, 0.92), rgba(9, 12, 18, 0.92));
-  border: 1px solid rgba(255, 255, 255, 0.075);
+  background: linear-gradient(
+    135deg,
+    color-mix(in oklab, var(--color-raised) 92%, transparent),
+    color-mix(in oklab, var(--color-surface) 92%, transparent)
+  );
+  border: 1px solid color-mix(in oklab, var(--color-white) 7.5%, transparent);
 }
 
 @utility manga-glass {
-  background: rgba(6, 8, 13, 0.76);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: color-mix(in oklab, var(--color-glass) 76%, transparent);
+  border: 1px solid color-mix(in oklab, var(--color-white) 8%, transparent);
   backdrop-filter: blur(18px);
 }
 
 @utility brand-gradient {
-  background-image: linear-gradient(105deg, #b92824 0%, #dc3f35 55%, #e5682e 100%);
+  background-image: linear-gradient(
+    105deg,
+    var(--color-brand-600) 0%,
+    var(--color-brand-500) 55%,
+    var(--color-magenta-500) 100%
+  );
 }
 
 .manga-range {
@@ -107,10 +147,10 @@ a {
   border-radius: 999px;
   background: linear-gradient(
     to right,
-    #c6322d 0%,
-    #eb6948 var(--range-progress),
-    rgba(255, 255, 255, 0.13) var(--range-progress),
-    rgba(255, 255, 255, 0.13) 100%
+    var(--color-brand-500) 0%,
+    var(--color-magenta-400) var(--range-progress),
+    color-mix(in oklab, var(--color-white) 13%, transparent) var(--range-progress),
+    color-mix(in oklab, var(--color-white) 13%, transparent) 100%
   );
 }
 

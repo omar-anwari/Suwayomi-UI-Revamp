@@ -151,6 +151,36 @@ export const LibraryFullQuery = graphql(`
   }
 `);
 
+export const ContinueReadingQuery = graphql(`
+  query ContinueReading($first: Int) {
+    chapters(
+      filter: { inLibrary: { equalTo: true }, lastReadAt: { greaterThan: "0" } }
+      order: [{ by: LAST_READ_AT, byType: DESC }]
+      first: $first
+    ) {
+      nodes {
+        id
+        name
+        chapterNumber
+        lastPageRead
+        pageCount
+        isRead
+        lastReadAt
+        mangaId
+        manga {
+          id
+          title
+          thumbnailUrl
+          unreadCount
+          firstUnreadChapter {
+            id
+          }
+        }
+      }
+    }
+  }
+`);
+
 export const LibraryUpdatesQuery = graphql(`
   query LibraryUpdates($first: Int) {
     chapters(
@@ -191,6 +221,8 @@ export const UpdateLibraryMutation = graphql(`
           isRunning
           totalJobs
           finishedJobs
+          skippedMangasCount
+          skippedCategoriesCount
         }
       }
     }
@@ -204,6 +236,8 @@ export const LibraryUpdateStatusQuery = graphql(`
         isRunning
         totalJobs
         finishedJobs
+        skippedMangasCount
+        skippedCategoriesCount
       }
     }
   }
@@ -344,6 +378,7 @@ export const ServerSettingsQuery = graphql(`
       globalUpdateInterval
       updateMangas
       excludeUnreadChapters
+      excludeEntryWithUnreadChapters
       excludeNotStarted
       excludeCompleted
       maxSourcesInParallel
@@ -401,6 +436,7 @@ export const UpdateServerSettingsMutation = graphql(`
         globalUpdateInterval
         updateMangas
         excludeUnreadChapters
+        excludeEntryWithUnreadChapters
         excludeNotStarted
         excludeCompleted
         maxSourcesInParallel

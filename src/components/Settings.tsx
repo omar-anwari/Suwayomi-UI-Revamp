@@ -25,10 +25,12 @@ import {
   LibraryIcon,
   LogOutIcon,
   SettingsIcon,
+  SparklesIcon,
 } from './icons';
 import { ErrorState, PageHeader, Spinner } from './ui';
 
 const destinations = [
+  { label: 'Appearance', description: 'Themes, custom palettes, and colors', Icon: SparklesIcon, to: '/settings/appearance' },
   { label: 'Server Settings', description: 'Updates, backups, WebUI, network, sync, and logs', Icon: SettingsIcon, to: '/settings/server' },
   { label: 'Reader Settings', description: 'Reading mode, image fit, brightness, and progress', Icon: BookOpenIcon, to: '/settings/reader' },
   { label: 'Library', description: 'Manage saved titles and reading history', Icon: LibraryIcon, to: '/library' },
@@ -48,7 +50,7 @@ export function Settings() {
     <div className="min-h-dvh">
       <PageHeader title="Settings" />
       <main className="mx-auto max-w-3xl px-4 pb-8 pt-5 sm:px-6">
-        <section className="flex items-center gap-4 rounded-2xl border border-white/[0.08] bg-[#0b0e15]/85 p-4">
+        <section className="flex items-center gap-4 rounded-2xl border border-white/[0.08] bg-surface/85 p-4">
           <div className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-brand-500/15 ring-1 ring-brand-500/25">
             <BrandMark className="h-10 w-10" />
           </div>
@@ -60,7 +62,7 @@ export function Settings() {
 
         <section className="mt-6">
           <h2 className="mb-2 px-1 text-xs font-semibold uppercase tracking-[0.14em] text-zinc-500">Navigation</h2>
-          <div className="overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0b0e15]/85">
+          <div className="overflow-hidden rounded-2xl border border-white/[0.08] bg-surface/85">
             {destinations.map(({ label, description, Icon, to }, index) => (
               <Link
                 key={to}
@@ -82,7 +84,7 @@ export function Settings() {
 
         <section className="mt-6">
           <h2 className="mb-2 px-1 text-xs font-semibold uppercase tracking-[0.14em] text-zinc-500">Actions</h2>
-          <div className="overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0b0e15]/85">
+          <div className="overflow-hidden rounded-2xl border border-white/[0.08] bg-surface/85">
             <button
               onClick={resetReaderSettings}
               className="flex w-full items-center gap-3 px-4 py-3.5 text-left hover:bg-white/[0.04]"
@@ -110,6 +112,7 @@ type ServerSettingsDraft = {
   globalUpdateInterval: number;
   updateMangas: boolean;
   excludeUnreadChapters: boolean;
+  excludeEntryWithUnreadChapters: boolean;
   excludeNotStarted: boolean;
   excludeCompleted: boolean;
   maxSourcesInParallel: number;
@@ -157,6 +160,7 @@ function toDraft(settings: ServerSettingsData['settings']): ServerSettingsDraft 
     globalUpdateInterval: settings.globalUpdateInterval,
     updateMangas: settings.updateMangas,
     excludeUnreadChapters: settings.excludeUnreadChapters,
+    excludeEntryWithUnreadChapters: settings.excludeEntryWithUnreadChapters,
     excludeNotStarted: settings.excludeNotStarted,
     excludeCompleted: settings.excludeCompleted,
     maxSourcesInParallel: settings.maxSourcesInParallel,
@@ -320,6 +324,13 @@ export function ServerSettings() {
               title="Skip titles with unread chapters"
               value={draft.excludeUnreadChapters}
               onChange={(value) => update('excludeUnreadChapters', value)}
+              nested
+            />
+            <ToggleRow
+              title="Skip entries with unread chapters"
+              subtitle="Separate server-side filter from the one above; both must be off to update everything"
+              value={draft.excludeEntryWithUnreadChapters}
+              onChange={(value) => update('excludeEntryWithUnreadChapters', value)}
               nested
             />
             <ToggleRow
@@ -523,7 +534,7 @@ export function ServerSettings() {
         {saveError && <ErrorState message={saveError.message} />}
       </main>
 
-      <div className="fixed inset-x-0 bottom-[calc(4.25rem+env(safe-area-inset-bottom))] z-40 border-t border-white/[0.07] bg-[#030509]/92 px-4 py-3 backdrop-blur-2xl md:bottom-0 md:z-30">
+      <div className="fixed inset-x-0 bottom-[calc(4.25rem+env(safe-area-inset-bottom))] z-40 border-t border-white/[0.07] bg-glass/92 px-4 py-3 backdrop-blur-2xl md:bottom-0 md:z-30">
         <div className="mx-auto grid max-w-3xl grid-cols-[auto_1fr] gap-2">
           <button
             onClick={() => baseline && setDraft({ ...baseline })}
@@ -535,7 +546,7 @@ export function ServerSettings() {
           <button
             onClick={save}
             disabled={!dirty || saving}
-            className="brand-gradient flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-brand-600/20 disabled:cursor-not-allowed disabled:opacity-45"
+            className="brand-gradient flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold text-on-brand shadow-lg shadow-brand-600/20 disabled:cursor-not-allowed disabled:opacity-45"
           >
             {saving && <Spinner className="h-4 w-4 text-white" />}
             {saved ? 'Settings saved' : saving ? 'Saving…' : 'Save server settings'}
@@ -616,7 +627,7 @@ export function ReaderSettings() {
           onChange={(value) => update('fit', value as FitMode)}
         />
 
-        <div className="overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0b0e15]/85">
+        <div className="overflow-hidden rounded-2xl border border-white/[0.08] bg-surface/85">
           <ToggleRow
             title="Show progress bar"
             value={prefs.showProgressBar}
@@ -647,7 +658,7 @@ export function ReaderSettings() {
   );
 }
 
-function SettingsSection({
+export function SettingsSection({
   eyebrow,
   title,
   description,
@@ -659,7 +670,7 @@ function SettingsSection({
   children: ReactNode;
 }) {
   return (
-    <section className="rounded-2xl border border-white/[0.08] bg-[#0b0e15]/85 p-4 sm:p-5">
+    <section className="rounded-2xl border border-white/[0.08] bg-surface/85 p-4 sm:p-5">
       <div className="mb-4">
         <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-brand-400">{eyebrow}</p>
         <h2 className="mt-1 text-base font-semibold text-zinc-100">{title}</h2>
@@ -677,7 +688,7 @@ function FieldGrid({ children }: { children: ReactNode }) {
 function SettingsRows({ children, columns = false }: { children: ReactNode; columns?: boolean }) {
   return (
     <div
-      className={`overflow-hidden rounded-xl border border-white/[0.08] bg-[#070a10] ${
+      className={`overflow-hidden rounded-xl border border-white/[0.08] bg-app ${
         columns ? 'sm:grid sm:grid-cols-2' : ''
       }`}
     >
@@ -687,7 +698,7 @@ function SettingsRows({ children, columns = false }: { children: ReactNode; colu
 }
 
 const fieldClass =
-  'mt-1.5 w-full rounded-xl border border-white/[0.09] bg-[#070a10] px-3 py-3 text-sm text-zinc-100 outline-none transition placeholder:text-zinc-600 focus:border-brand-500/60 focus:ring-2 focus:ring-brand-500/10';
+  'mt-1.5 w-full rounded-xl border border-white/[0.09] bg-app px-3 py-3 text-sm text-zinc-100 outline-none transition placeholder:text-zinc-600 focus:border-brand-500/60 focus:ring-2 focus:ring-brand-500/10';
 
 function TextField({
   label,
@@ -806,7 +817,7 @@ function ToggleRow({
       className={`flex items-center gap-4 ${
         nested
           ? 'border-b border-white/[0.06] px-4 py-3 last:border-0'
-          : 'rounded-2xl border border-white/[0.08] bg-[#0b0e15]/85 p-4'
+          : 'rounded-2xl border border-white/[0.08] bg-surface/85 p-4'
       }`}
     >
       <div className="min-w-0 flex-1">
@@ -852,7 +863,7 @@ function OptionSection({
             className={`rounded-xl border px-2 py-2.5 text-xs font-medium transition-colors ${
               value === key
                 ? 'border-brand-400 bg-brand-500/25 text-white'
-                : 'border-white/[0.08] bg-[#0b0e15] text-zinc-300'
+                : 'border-white/[0.08] bg-surface text-zinc-300'
             }`}
           >
             {label}

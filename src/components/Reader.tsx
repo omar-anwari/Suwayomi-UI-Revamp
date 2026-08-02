@@ -460,7 +460,7 @@ function EndPanel({
       {next ? (
         <button
           onClick={onNext}
-          className="rounded-xl bg-gradient-to-r from-brand-500 to-magenta-500 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-brand-500/25 transition hover:brightness-110"
+          className="rounded-xl bg-gradient-to-r from-brand-500 to-magenta-500 px-6 py-3 text-sm font-semibold text-on-brand shadow-lg shadow-brand-500/25 transition hover:brightness-110"
         >
           Next: {next.name || `Chapter ${next.chapterNumber}`} →
         </button>
@@ -534,7 +534,7 @@ function Toolbar({
       </div>
 
       {open && (
-        <div className="absolute right-2 top-[calc(4rem+env(safe-area-inset-top))] w-72 rounded-2xl border border-white/10 bg-[#0b0e15]/98 p-4 shadow-2xl shadow-black/60 backdrop-blur-xl">
+        <div className="absolute right-2 top-[calc(4rem+env(safe-area-inset-top))] w-72 rounded-2xl border border-white/10 bg-surface/98 p-4 shadow-2xl shadow-black/60 backdrop-blur-xl">
           <p className="px-1 text-xs font-semibold uppercase tracking-wider text-zinc-500">
             Reading mode
           </p>
@@ -566,7 +566,7 @@ function Segmented<T extends string>({
           onClick={() => onChange(v)}
           className={`rounded-lg px-1 py-1.5 text-xs font-medium transition-colors ${
             value === v
-              ? 'bg-gradient-to-r from-brand-500 to-magenta-500 text-white shadow'
+              ? 'bg-gradient-to-r from-brand-500 to-magenta-500 text-on-brand shadow'
               : 'text-zinc-300 hover:bg-white/10'
           }`}
         >

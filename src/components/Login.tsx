@@ -24,7 +24,7 @@ function loginErrorMessage(raw: string): string {
   const msg = raw.split('\n')[0].trim();
   if (/Incorrect username or password/i.test(msg)) return 'Incorrect username or password.';
   if (/already logged-in/i.test(msg)) {
-    return 'This server is authenticating the session itself — set its authMode to UI_LOGIN, then clear cookies and reload.';
+    return 'This server is authenticating the session itself - set its authMode to UI_LOGIN, then clear cookies and reload.';
   }
   return msg;
 }
@@ -50,7 +50,7 @@ export function Login() {
   }
 
   return (
-    <div className="relative min-h-dvh overflow-hidden bg-[#020308] lg:grid lg:grid-cols-[1.18fr_.82fr]">
+    <div className="relative min-h-dvh overflow-hidden bg-app lg:grid lg:grid-cols-[1.18fr_.82fr]">
       <aside className="relative hidden min-h-dvh overflow-hidden border-r border-white/[0.07] lg:block">
         <KeyArt />
         <div className="relative z-10 flex min-h-dvh flex-col justify-between p-10 xl:p-12">
@@ -84,7 +84,7 @@ export function Login() {
         </div>
 
         <div className="relative z-10 flex flex-1 items-center justify-center px-5 pb-8 lg:px-8">
-          <div className="-mt-7 w-full max-w-md rounded-[1.6rem] border border-white/[0.09] bg-[#070911]/95 p-5 shadow-2xl shadow-black/60 backdrop-blur-xl sm:p-7 lg:mt-0 lg:max-w-[25rem] lg:bg-[#070911]/75">
+          <div className="-mt-7 w-full max-w-md rounded-[1.6rem] border border-white/[0.09] bg-glass/95 p-5 shadow-2xl shadow-black/60 backdrop-blur-xl sm:p-7 lg:mt-0 lg:max-w-[25rem] lg:bg-glass/75">
             <div className="mb-6 hidden lg:block">
               <h2 className="text-3xl font-bold tracking-[-0.03em] text-white">Welcome Back</h2>
               <p className="mt-1 text-sm text-zinc-500">Sign in to your Suwayomi server</p>
@@ -99,7 +99,7 @@ export function Login() {
                   placeholder="Email or Username"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  className="w-full rounded-xl border border-white/10 bg-[#11141e] py-3.5 pl-11 pr-3 text-sm text-white outline-none transition placeholder:text-zinc-500 focus:border-brand-500/70 focus:ring-2 focus:ring-brand-500/10"
+                  className="w-full rounded-xl border border-white/10 bg-raised py-3.5 pl-11 pr-3 text-sm text-white outline-none transition placeholder:text-zinc-500 focus:border-brand-500/70 focus:ring-2 focus:ring-brand-500/10"
                   required
                 />
               </FieldLabel>
@@ -112,7 +112,7 @@ export function Login() {
                   placeholder="Enter your password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full rounded-xl border border-white/10 bg-[#11141e] py-3.5 pl-11 pr-11 text-sm text-white outline-none transition placeholder:text-zinc-500 focus:border-brand-500/70 focus:ring-2 focus:ring-brand-500/10"
+                  className="w-full rounded-xl border border-white/10 bg-raised py-3.5 pl-11 pr-11 text-sm text-white outline-none transition placeholder:text-zinc-500 focus:border-brand-500/70 focus:ring-2 focus:ring-brand-500/10"
                   required
                 />
                 <button
@@ -146,7 +146,7 @@ export function Login() {
               <button
                 type="submit"
                 disabled={fetching}
-                className="brand-gradient flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-semibold text-white shadow-lg shadow-brand-600/25 transition hover:brightness-110 disabled:opacity-60"
+                className="brand-gradient flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-semibold text-on-brand shadow-lg shadow-brand-600/25 transition hover:brightness-110 disabled:opacity-60"
               >
                 {fetching && <Spinner className="h-4 w-4 text-white" />}
                 {fetching ? 'Signing in…' : 'Sign In'}
@@ -162,10 +162,10 @@ export function Login() {
 
 function KeyArt() {
   return (
-    <div className="absolute inset-0 bg-[#080a10]">
+    <div className="absolute inset-0 bg-surface">
       <img src="/assets/wallpaper.png" alt="" className="h-full w-full object-cover object-left-bottom" />
       <div className="absolute inset-0 bg-black/55" />
-      <div className="absolute inset-0 bg-gradient-to-t from-[#020308]/25 via-transparent to-[#020308]/10" />
+      <div className="absolute inset-0 bg-gradient-to-t from-app/25 via-transparent to-app/10" />
     </div>
   );
 }
@@ -189,7 +189,7 @@ function FeatureCard({
   desc: string;
 }) {
   return (
-    <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-[#080a12]/75 p-3 backdrop-blur-md">
+    <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-surface/75 p-3 backdrop-blur-md">
       <div className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-brand-500/15 text-brand-400 ring-1 ring-brand-500/30">
         <Icon className="h-5 w-5" />
       </div>
