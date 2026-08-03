@@ -10,9 +10,11 @@ import {
 import { loadPrefs, savePrefs, type FitMode, type ReadingMode } from '../readerPrefs';
 import { BookmarkIcon, MoreVerticalIcon, SettingsIcon, ChevronLeftIcon } from './icons';
 import { Spinner } from './ui';
+import { SIDE_ZONE, useWebtoonZoom, useZoomPan, type TapZone } from './zoomPan';
 
 const PRELOAD_CONCURRENCY = 4;
 const PROGRESS_DEBOUNCE_MS = 400;
+const TAP_HINT_MS = 2300;
 
 const FIT_CLASS: Record<FitMode, string> = {
   width: 'w-full h-auto',
@@ -223,6 +225,17 @@ function ReaderView() {
   const loadedCount = usePagePreloader(pages);
   const loadPct = total > 0 ? Math.round((loadedCount / total) * 100) : 0;
 
+  const ready = !loading && !loadError && total > 0;
+  const [hintVisible, setHintVisible] = useState(false);
+  const hintShownRef = useRef(false);
+  useEffect(() => {
+    if (hintShownRef.current || !ready || !prefs.showTapZoneHint) return;
+    hintShownRef.current = true;
+    setHintVisible(true);
+    const timer = window.setTimeout(() => setHintVisible(false), TAP_HINT_MS);
+    return () => window.clearTimeout(timer);
+  }, [ready, prefs.showTapZoneHint]);
+
   return (
     <div
       className={`relative h-[100dvh] w-screen overflow-hidden text-zinc-100 ${
@@ -338,6 +351,63 @@ function ReaderView() {
           </div>
         </div>
       )}
+
+      {hintVisible && <TapZoneHint mode={prefs.mode} />}
+    </div>
+  );
+}
+
+function TapZoneHint({ mode }: { mode: ReadingMode }) {
+  const sideWidth = `${SIDE_ZONE * 100}%`;
+  const zones =
+    mode === 'webtoon'
+      ? [{ key: 'center', label: 'Controls', hint: 'Tap', width: '100%', icon: <SettingsIcon className="h-7 w-7" /> }]
+      : [
+          {
+            key: 'left',
+            label: mode === 'rtl' ? 'Next' : 'Previous',
+            hint: 'Tap',
+            width: sideWidth,
+            icon: <ChevronLeftIcon className="h-7 w-7" />,
+          },
+          {
+            key: 'center',
+            label: 'Controls',
+            hint: 'Tap',
+            width: `${(1 - SIDE_ZONE * 2) * 100}%`,
+            icon: <SettingsIcon className="h-7 w-7" />,
+          },
+          {
+            key: 'right',
+            label: mode === 'rtl' ? 'Previous' : 'Next',
+            hint: 'Tap',
+            width: sideWidth,
+            icon: <ChevronLeftIcon className="h-7 w-7 rotate-180" />,
+          },
+        ];
+
+  return (
+    <div className="reader-hint pointer-events-none absolute inset-0 z-50 select-none">
+      <div className="flex h-full w-full bg-black/55 backdrop-blur-[2px]">
+        {zones.map((zone, i) => (
+          <div
+            key={zone.key}
+            style={{ width: zone.width }}
+            className={`flex h-full flex-col items-center justify-center gap-2 ${
+              i > 0 ? 'border-l border-dashed border-white/25' : ''
+            }`}
+          >
+            <div className="grid h-14 w-14 place-items-center rounded-full border border-white/20 bg-white/10 text-white">
+              {zone.icon}
+            </div>
+            <p className="text-sm font-semibold text-white">{zone.label}</p>
+            <p className="text-[11px] uppercase tracking-widest text-zinc-400">{zone.hint}</p>
+          </div>
+        ))}
+      </div>
+      <p className="absolute inset-x-0 bottom-24 text-center text-xs text-zinc-300">
+        Double-tap or pinch to zoom · drag to pan
+      </p>
     </div>
   );
 }
@@ -357,16 +427,37 @@ function PagedViewer({
   onBackward: () => void;
   onToggleUi: () => void;
 }) {
-  const leftAction = mode === 'rtl' ? onForward : onBackward;
-  const rightAction = mode === 'rtl' ? onBackward : onForward;
+  const onZoneTap = useCallback(
+    (zone: TapZone) => {
+      if (zone === 'center') onToggleUi();
+      else if (zone === 'left') (mode === 'rtl' ? onForward : onBackward)();
+      else (mode === 'rtl' ? onBackward : onForward)();
+    },
+    [mode, onForward, onBackward, onToggleUi],
+  );
+
+  const { containerRef, contentRef, contentStyle, containerProps, scale } = useZoomPan({
+    splitZones: true,
+    onZoneTap,
+    resetKey: `${src}|${fit}`,
+  });
+
   return (
-    <div className="flex h-full items-start justify-center overflow-auto">
-      <div className="absolute inset-0 z-10 flex">
-        <button aria-label="Previous" className="h-full w-[35%]" onClick={leftAction} />
-        <button aria-label="Toggle controls" className="h-full w-[30%]" onClick={onToggleUi} />
-        <button aria-label="Next" className="h-full w-[35%]" onClick={rightAction} />
-      </div>
-      <img src={src} alt="" className={`${FIT_CLASS[fit]} select-none`} draggable={false} />
+    <div
+      ref={containerRef}
+      {...containerProps}
+      className={`flex h-full items-start justify-center overflow-hidden ${
+        scale > 1 ? 'cursor-grab active:cursor-grabbing' : ''
+      }`}
+    >
+      <img
+        ref={contentRef}
+        src={src}
+        alt=""
+        style={contentStyle}
+        className={`${FIT_CLASS[fit]} select-none`}
+        draggable={false}
+      />
     </div>
   );
 }
@@ -386,9 +477,9 @@ function WebtoonViewer({
   onToggleUi: () => void;
   endPanel: ReactNode;
 }) {
-  const containerRef = useRef<HTMLDivElement | null>(null);
   const pageRefs = useRef<(HTMLDivElement | null)[]>([]);
   const scrolledRef = useRef(false);
+  const { containerRef, containerProps, scale } = useWebtoonZoom({ onTap: onToggleUi });
 
   useEffect(() => {
     const container = containerRef.current;
@@ -423,20 +514,26 @@ function WebtoonViewer({
   }, [initialPage]);
 
   return (
-    <div ref={containerRef} className="h-full overflow-auto" onClick={onToggleUi}>
-      <div className="mx-auto flex max-w-3xl flex-col">
-        {pages.map((src, i) => (
-          <div key={i} data-index={i} ref={(el) => { pageRefs.current[i] = el; }}>
-            <img
-              src={src}
-              alt=""
-              loading="lazy"
-              className={`${fit === 'width' ? 'w-full' : FIT_CLASS[fit]} mx-auto`}
-              draggable={false}
-            />
-          </div>
-        ))}
-        {endPanel}
+    <div
+      ref={containerRef}
+      {...containerProps}
+      className={`h-full overflow-auto ${scale > 1 ? 'cursor-grab active:cursor-grabbing' : ''}`}
+    >
+      <div style={{ width: '100%', transform: `scale(${scale})`, transformOrigin: '0 0' }}>
+        <div className="mx-auto flex max-w-3xl flex-col">
+          {pages.map((src, i) => (
+            <div key={i} data-index={i} ref={(el) => { pageRefs.current[i] = el; }}>
+              <img
+                src={src}
+                alt=""
+                loading="lazy"
+                className={`${fit === 'width' ? 'w-full' : FIT_CLASS[fit]} mx-auto select-none`}
+                draggable={false}
+              />
+            </div>
+          ))}
+          {endPanel}
+        </div>
       </div>
     </div>
   );

@@ -12,12 +12,12 @@ If you find anything broken or you got some cool idea, lmk in issues
 
 - **Home** - Has a featured manga section that's sort of like the hero image, a "Continue Reading" shelf of what you last had open, genre shortcuts, a "Trending Now" rail pulled from your most-used source, and recently updated titles. Mostly client-sided from one library query.
 - **Continue Reading** - the shelf under the hero picks up mid-chapter where you actually stopped (with the page number and a progress bar), or rolls you on to the next unread chapter if you finished the last one. One card per series, most recent first. It's ordered off `lastReadAt` straight from the chapter table, so unlike the Library list it also keeps titles you're fully caught up on.
-- **Themes** - seven built-in palettes including a light one, plus a custom theme editor where every colour is a variable you can set by hand. Export/import as JSON. See [Theming](#theming).
+- **Themes** - fifteen built-in palettes, twelve dark and three light, plus a custom theme editor where every colour is a variable you can set by hand. Export/import as JSON. See [Theming](#theming).
 - **Updates** - a feed of new chapters for the titles you follow, grouped by day and then by manga, so a series you just added doesn't bury the day under a few hundred backfilled chapters. Refresh kicks off a real library update on the server, shows live progress, and tells you how many titles the server's own update filters skipped.
 - **Library** - cover grid with Library / Bookmarks / History tabs, plus a Continue Reading list with per-series progress bars.
 - **Discover** - browse and search installed sources, with popular/latest listings.
 - **Manga detail** - metadata, synopsis, bookmark toggle, and a paginated chapter list (100 per page). Uninitialized manga are fetched from the source on first open.
-- **Reader** - left-to-right, right-to-left, and webtoon modes; fit-to-width/height/original; brightness; keyboard navigation; progress synced back to the server.
+- **Reader** - left-to-right, right-to-left, and webtoon modes; fit-to-width/height/original; brightness; keyboard navigation; progress synced back to the server. Pinch, double-tap or ctrl+scroll to zoom, then drag to pan around; the tap zones fade in over the page for a moment when you open a chapter so you know where to press.
 - **Settings** - appearance/themes and reader preferences (stored locally) plus real server settings: global updates, automatic backups, WebUI, SOCKS proxy, whatever else comes with Suwayomi.
 - **Installable** - ships a manifest and a service worker, so it installs to a home screen / dock and runs in its own window, with covers cached on-device. Needs HTTPS - see [Installing as a PWA](#installing-as-a-pwa).
 
@@ -150,7 +150,12 @@ src/
 
 ## Theming
 
-Settings → Appearance. Seven presets - Ember (the default), Midnight, Forest, Sakura, GMK 8008, Mono, and Paper (light) - plus a custom slot you can edit colour by colour. Everything is stored in `localStorage` under `suwayomi-theme` and applied in `main.tsx` before React mounts, so there's no flash of the wrong palette on load.
+Settings → Appearance. Fifteen presets, plus a custom slot you can edit colour by colour:
+
+- **Dark** - Ember (the default), Midnight, Forest, Sakura, GMK 8008, GMK Laser, Nord, Catppuccin Mocha, Gruvbox, Coffee, Mono, and Void - the last one being pure `#000000` surfaces for OLED screens, where black pixels are actually off.
+- **Light** - Paper (warm), Frost (cool), and Catppuccin Latte.
+
+Everything is stored in `localStorage` under `suwayomi-theme` and applied in `main.tsx` before React mounts, so there's no flash of the wrong palette on load.
 
 **How it actually works.** Tailwind v4 compiles its colour utilities down to variable references - `bg-brand-500` becomes `var(--color-brand-500)`, and `bg-white/5` becomes `color-mix(in oklab, var(--color-white) 5%, transparent)`. So overriding those variables on `<html>` at runtime retints the entire app, and no component needs to know a theme system exists. The `white/x` trick is the useful half: one `ink` token drives every overlay, border and hairline in the app at once, which is what makes a light theme possible without rewriting ~110 class usages.
 

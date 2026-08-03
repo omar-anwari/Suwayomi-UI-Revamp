@@ -10,6 +10,7 @@ export type ReaderPrefs = {
   showChapterSubtitle: boolean;
   showProgressBar: boolean;
   rememberLastChapter: boolean;
+  showTapZoneHint: boolean;
 };
 
 const KEY = 'suwayomi-reader-prefs';
@@ -21,6 +22,7 @@ export const DEFAULT_READER_PREFS: ReaderPrefs = {
   showChapterSubtitle: true,
   showProgressBar: true,
   rememberLastChapter: true,
+  showTapZoneHint: true,
 };
 
 export function loadPrefs(): ReaderPrefs {

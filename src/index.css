@@ -104,6 +104,25 @@ body {
   }
 }
 
+@keyframes reader-hint {
+  0% {
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  62% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.reader-hint {
+  animation: reader-hint 2.3s ease forwards;
+}
+
 button,
 a,
 input,

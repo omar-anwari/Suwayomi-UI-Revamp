@@ -640,6 +640,12 @@ export function ReaderSettings() {
             onChange={(value) => update('rememberLastChapter', value)}
             nested
           />
+          <ToggleRow
+            title="Show tap zones on open"
+            value={prefs.showTapZoneHint}
+            onChange={(value) => update('showTapZoneHint', value)}
+            nested
+          />
         </div>
 
         <div className="grid grid-cols-[auto_1fr] gap-2">
