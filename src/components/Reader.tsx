@@ -455,7 +455,7 @@ function PagedViewer({
         src={src}
         alt=""
         style={contentStyle}
-        className={`${FIT_CLASS[fit]} select-none`}
+        className={`${FIT_CLASS[fit]} my-auto select-none`}
         draggable={false}
       />
     </div>

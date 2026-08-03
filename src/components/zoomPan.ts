@@ -127,20 +127,35 @@ export function useZoomPan({
   const pointers = useRef(new Map<number, Pt>());
   const gesture = useRef<Gesture | null>(null);
 
-  const clampTransform = useCallback((next: Transform): Transform => {
+  const layoutTop = useCallback(() => {
     const container = containerRef.current;
     const content = contentRef.current;
-    if (!container || !content) return next;
-    const width = content.offsetWidth * next.scale;
-    const height = content.offsetHeight * next.scale;
-    const slackX = Math.max(0, (width - container.clientWidth) / 2);
-    const minY = Math.min(0, container.clientHeight - height);
-    return {
-      scale: next.scale,
-      x: clamp(next.x, -slackX, slackX),
-      y: clamp(next.y, minY, 0),
-    };
+    if (!container || !content) return 0;
+    return Math.max(0, (container.clientHeight - content.offsetHeight) / 2);
   }, []);
+
+  const clampTransform = useCallback(
+    (next: Transform): Transform => {
+      const container = containerRef.current;
+      const content = contentRef.current;
+      if (!container || !content) return next;
+      const width = content.offsetWidth * next.scale;
+      const height = content.offsetHeight * next.scale;
+      const viewport = container.clientHeight;
+      const top = layoutTop();
+      const slackX = Math.max(0, (width - container.clientWidth) / 2);
+      const [minY, maxY] =
+        height <= viewport
+          ? [(viewport - height) / 2 - top, (viewport - height) / 2 - top]
+          : [viewport - height - top, -top];
+      return {
+        scale: next.scale,
+        x: clamp(next.x, -slackX, slackX),
+        y: clamp(next.y, minY, maxY),
+      };
+    },
+    [layoutTop],
+  );
 
   const commit = useCallback((next: Transform) => {
     setTransform((current) =>
@@ -154,7 +169,7 @@ export function useZoomPan({
       if (!container) return base;
       const rect = container.getBoundingClientRect();
       const originX = rect.left + rect.width / 2;
-      const originY = rect.top;
+      const originY = rect.top + layoutTop();
       const ratio = nextScale / base.scale;
       return clampTransform({
         scale: nextScale,
@@ -162,7 +177,7 @@ export function useZoomPan({
         y: focal.y - originY - ratio * (baseFocal.y - originY - base.y),
       });
     },
-    [clampTransform],
+    [clampTransform, layoutTop],
   );
 
   const animate = useCallback(() => {
