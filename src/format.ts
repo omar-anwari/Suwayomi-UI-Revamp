@@ -29,6 +29,10 @@ export function chapterLabel(name: string, chapterNumber: number): string {
   return `Chapter ${chapterNumber}`;
 }
 
+export function sourceLinkLabel(sourceName?: string | null): string {
+  return sourceName ? `Open on ${sourceName}` : 'Open on source website';
+}
+
 export function fetchedAtToMs(value: string): number {
   const seconds = Number(value);
   return Number.isFinite(seconds) ? seconds * 1000 : 0;

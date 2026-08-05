@@ -143,16 +143,17 @@ function ContinueRow({ m }: { m: LibNode }) {
   const to = m.firstUnreadChapter ? `/manga/${m.id}/chapter/${m.firstUnreadChapter.id}` : `/manga/${m.id}`;
   return (
     <li>
-      <Link
-        to={to}
-      className="flex items-center gap-3 rounded-xl border border-white/[0.07] bg-surface/80 p-2.5 transition-colors hover:border-white/15 hover:bg-raised"
-      >
-        <div className="h-20 w-28 shrink-0 overflow-hidden rounded-lg bg-zinc-800 ring-1 ring-white/5">
+      <div className="flex items-center gap-3 rounded-xl border border-white/[0.07] bg-surface/80 p-2.5 transition-colors hover:border-white/15 hover:bg-raised">
+        <Link
+          to={`/manga/${m.id}`}
+          aria-label={`${m.title} details`}
+          className="h-20 w-28 shrink-0 overflow-hidden rounded-lg bg-zinc-800 ring-1 ring-white/5"
+        >
           {m.thumbnailUrl && (
             <img src={m.thumbnailUrl} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover" />
           )}
-        </div>
-        <div className="min-w-0 flex-1">
+        </Link>
+        <Link to={to} className="min-w-0 flex-1">
           <p className="truncate text-sm font-medium text-zinc-100">{m.title}</p>
           <p className="mt-0.5 truncate text-xs text-zinc-500">
             {m.firstUnreadChapter ? chapterLabel(m.firstUnreadChapter.name, m.firstUnreadChapter.chapterNumber) : ''}
@@ -166,9 +167,9 @@ function ContinueRow({ m }: { m: LibNode }) {
             </div>
             <span className="shrink-0 text-xs font-medium tabular-nums text-zinc-300">{pct}%</span>
           </div>
-        </div>
+        </Link>
         <MoreVerticalIcon className="h-5 w-5 shrink-0 text-zinc-500" />
-      </Link>
+      </div>
     </li>
   );
 }

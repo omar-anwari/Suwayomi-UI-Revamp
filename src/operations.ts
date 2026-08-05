@@ -307,9 +307,14 @@ export const ReaderChapterQuery = graphql(`
       lastPageRead
       isRead
       mangaId
+      realUrl
       manga {
         id
         title
+        realUrl
+        source {
+          displayName
+        }
       }
     }
   }

@@ -47,12 +47,14 @@ export function RailCard({
   to?: string;
   caption?: string;
 }) {
+  const detailTo = `/manga/${id}`;
   return (
-    <Link
-      to={to ?? `/manga/${id}`}
-      className="group w-[6.5rem] shrink-0 snap-start sm:w-36"
-    >
-      <div className="relative aspect-2/3 overflow-hidden rounded-xl bg-zinc-900 shadow-lg shadow-black/40 ring-1 ring-white/5 transition duration-200 group-hover:ring-white/20 group-active:scale-[0.98]">
+    <div className="group w-[6.5rem] shrink-0 snap-start sm:w-36">
+      <Link
+        to={detailTo}
+        aria-label={title}
+        className="relative block aspect-2/3 overflow-hidden rounded-xl bg-zinc-900 shadow-lg shadow-black/40 ring-1 ring-white/5 transition duration-200 group-hover:ring-white/20 active:scale-[0.98]"
+      >
         {thumbnailUrl ? (
           <img
             src={thumbnailUrl}
@@ -89,11 +91,13 @@ export function RailCard({
           </div>
         )}
 
-      </div>
-      <p className="mt-1.5 line-clamp-2 text-xs font-medium leading-tight text-zinc-200 transition-colors group-hover:text-white sm:text-[13px]">
-        {title}
-      </p>
-      {caption && <p className="mt-0.5 truncate text-[11px] text-zinc-500">{caption}</p>}
-    </Link>
+      </Link>
+      <Link to={to ?? detailTo} className="block">
+        <p className="mt-1.5 line-clamp-2 text-xs font-medium leading-tight text-zinc-200 transition-colors group-hover:text-white sm:text-[13px]">
+          {title}
+        </p>
+        {caption && <p className="mt-0.5 truncate text-[11px] text-zinc-500">{caption}</p>}
+      </Link>
+    </div>
   );
 }

@@ -13,14 +13,15 @@ import {
   BookOpenIcon,
   ChevronLeftIcon,
   BookmarkIcon,
+  ExternalLinkIcon,
   HomeIcon,
   CompassIcon,
   LibraryIcon,
-  MoreVerticalIcon,
   ShareIcon,
   StarIcon,
   UserIcon,
 } from './icons';
+import { sourceLinkLabel } from '../format';
 
 const CHAPTER_PAGE = 100;
 
@@ -96,11 +97,12 @@ function MangaDetailView() {
               <a
                 href={manga.realUrl}
                 target="_blank"
-                rel="noreferrer"
-                aria-label="Open source page"
+                rel="noreferrer noopener"
+                aria-label={sourceLinkLabel(manga.source?.displayName)}
+                title={sourceLinkLabel(manga.source?.displayName)}
                 className="grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-black/30 text-white backdrop-blur transition-colors hover:bg-black/50"
               >
-                <MoreVerticalIcon className="h-5 w-5" />
+                <ExternalLinkIcon className="h-5 w-5" />
               </a>
             )}
           </div>
@@ -162,10 +164,10 @@ function MangaDetailView() {
                   All caught up
                 </div>
               )}
-              <div className="mt-2">
+              <div className="mt-2 flex gap-2">
                 <button
                   onClick={toggleLibrary}
-                  className={`flex w-full items-center justify-center gap-2 rounded-xl border px-4 py-3 text-sm font-medium transition-colors ${
+                  className={`flex flex-1 items-center justify-center gap-2 rounded-xl border px-4 py-3 text-sm font-medium transition-colors ${
                     inLibrary
                       ? 'border-brand-500/40 bg-brand-500/15 text-brand-300'
                       : 'border-white/10 bg-surface text-zinc-300 hover:bg-white/10'
@@ -174,6 +176,18 @@ function MangaDetailView() {
                   <BookmarkIcon className="h-5 w-5" />
                   {inLibrary ? 'Bookmarked' : 'Bookmark'}
                 </button>
+                {manga.realUrl && (
+                  <a
+                    href={manga.realUrl}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                    title={sourceLinkLabel(manga.source?.displayName)}
+                    className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-white/10 bg-surface px-4 py-3 text-sm font-medium text-zinc-300 transition-colors hover:bg-white/10"
+                  >
+                    <ExternalLinkIcon className="h-5 w-5" />
+                    <span className="truncate">{manga.source?.displayName ?? 'Open source'}</span>
+                  </a>
+                )}
               </div>
             </div>
 

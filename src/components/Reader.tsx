@@ -8,7 +8,8 @@ import {
   UpdateChapterProgressMutation,
 } from '../operations';
 import { loadPrefs, savePrefs, type FitMode, type ReadingMode } from '../readerPrefs';
-import { BookmarkIcon, MoreVerticalIcon, SettingsIcon, ChevronLeftIcon } from './icons';
+import { BookmarkIcon, ExternalLinkIcon, MoreVerticalIcon, SettingsIcon, ChevronLeftIcon } from './icons';
+import { sourceLinkLabel } from '../format';
 import { Spinner } from './ui';
 import { SIDE_ZONE, useWebtoonZoom, useZoomPan, type TapZone } from './zoomPan';
 
@@ -251,6 +252,8 @@ function ReaderView() {
           <Toolbar
             title={chapter?.manga.title}
             subtitle={prefs.showChapterSubtitle ? chapter?.name : undefined}
+            sourceUrl={chapter?.realUrl ?? chapter?.manga.realUrl ?? undefined}
+            sourceName={chapter?.manga.source?.displayName}
             loadPct={total > 0 ? loadPct : undefined}
             prefs={prefs}
             onFit={setFit}
@@ -579,6 +582,8 @@ function EndPanel({
 function Toolbar({
   title,
   subtitle,
+  sourceUrl,
+  sourceName,
   loadPct,
   prefs,
   onFit,
@@ -589,6 +594,8 @@ function Toolbar({
 }: {
   title?: string;
   subtitle?: string;
+  sourceUrl?: string;
+  sourceName?: string | null;
   loadPct?: number;
   prefs: { fit: FitMode; mode: ReadingMode };
   onFit: (f: FitMode) => void;
@@ -615,6 +622,18 @@ function Toolbar({
           <span className="tabular-nums text-xs text-zinc-500" title="Pages buffered">
             {loadPct}%
           </span>
+        )}
+        {sourceUrl && (
+          <a
+            href={sourceUrl}
+            target="_blank"
+            rel="noreferrer noopener"
+            aria-label={sourceLinkLabel(sourceName)}
+            title={sourceLinkLabel(sourceName)}
+            className="grid h-10 w-10 place-items-center rounded-full text-zinc-300 hover:bg-white/10"
+          >
+            <ExternalLinkIcon className="h-5.5 w-5.5" />
+          </a>
         )}
         <button className="grid h-10 w-10 place-items-center rounded-full text-zinc-300 hover:bg-white/10" title="Bookmark">
           <BookmarkIcon className="h-5.5 w-5.5" />
